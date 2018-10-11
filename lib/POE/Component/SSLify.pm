@@ -283,6 +283,8 @@ L<http://www.openssl.org/docs/ssl/SSL_CTX_new.html> for more info.
 	* sslv2
 	* sslv3
 	* tlsv1
+	* tlsv1_1
+	* tlsv1_2
 	* sslv23
 	* default ( sslv23 )
 
@@ -339,21 +341,27 @@ sub SSLify_Options {
 	return 1;
 }
 
+
+my %ssl_versions = (
+	sslv2 => \&Net::SSLeay::CTX_v2_new,
+	sslv3 => \&Net::SSLeay::CTX_v3_new,
+	tlsv1 => \&Net::SSLeay::CTX_tlsv1_new,
+	tlsv1_1 => \&Net::SSLeay::CTX_tlsv1_1_new,
+	tlsv1_2 => \&Net::SSLeay::CTX_tlsv1_2_new,
+
+	# The below are equivalent
+	sslv23 => \&Net::SSLeay::CTX_v23_new,
+	default => \&Net::SSLeay::CTX_new,
+);
+
+
 sub _createSSLcontext {
 	my( $key, $cert, $version, $options ) = @_;
 
 	my $context;
 	if ( defined $version and ! ref $version ) {
-		if ( $version eq 'sslv2' ) {
-			$context = Net::SSLeay::CTX_v2_new();
-		} elsif ( $version eq 'sslv3' ) {
-			$context = Net::SSLeay::CTX_v3_new();
-		} elsif ( $version eq 'tlsv1' ) {
-			$context = Net::SSLeay::CTX_tlsv1_new();
-		} elsif ( $version eq 'sslv23' ) {
-			$context = Net::SSLeay::CTX_v23_new();
-		} elsif ( $version eq 'default' ) {
-			$context = Net::SSLeay::CTX_new();
+		if ($ssl_versions{$version}) {
+			$context = $ssl_versions{$version}->();
 		} else {
 			die "unknown SSL version: $version";
 		}
