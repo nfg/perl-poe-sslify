@@ -45,8 +45,8 @@ POE::Component::Server::TCP->new
 			$heap->{client}->flush; # make sure we sent the pong
 
 			# sslify it in-situ!
-			eval { SSLify_Options('mylib/example.key', 'mylib/example.crt', 'sslv3') };
-			eval { SSLify_Options('../mylib/example.key', '../mylib/example.crt', 'sslv3') } if ($@);
+			eval { SSLify_Options('mylib/example.key', 'mylib/example.crt', 'tlsv1') };
+			eval { SSLify_Options('../mylib/example.key', '../mylib/example.crt', 'tlsv1') } if ($@);
 			ok(!$@, "SERVER: SSLify_Options $@");
 			my $socket = eval { Server_SSLify($heap->{client}->get_output_handle) };
 			ok(!$@, "SERVER: Server_SSLify $@");
@@ -115,7 +115,7 @@ POE::Component::Client::TCP->new
 			ok(1, "CLIENT: recv: $line");
 
 			# sslify it in-situ!
-			my $ctx = eval { SSLify_ContextCreate(undef, undef, 'sslv3') };
+			my $ctx = eval { SSLify_ContextCreate(undef, undef, 'tlsv1') };
 			ok(!$@, "CLIENT: SSLify_ContextCreate $@");
 			my $socket = eval { Client_SSLify($heap->{server}->get_output_handle, undef, undef, $ctx) };
 			ok(!$@, "CLIENT: Client_SSLify $@");
