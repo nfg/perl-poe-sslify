@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Add "tlsv1_1" and "tlsv1_2" support, and use "tlsv1" in unit tests.
 
 1.012 2014-11-14T20:19:52Z UTC
  - Reduce memory usage and speedup writing large strings by avoiding substr
